@@ -1,56 +1,65 @@
-import React, { useState }from "react";
-import { useForm } from "react-hook-form";
-import axiosWithAuth from "../utils/axiosWithAuth";
 
-const Login = props => {
-  // make a post request to retrieve a token from the api
+ // make a post request to retrieve a token from the api
   // when you have handled the token, navigate to the BubblePage route
-
-const [data, setData] = useState({});
-  const handleChange = e => {
-    setData({
-      ...data,
-      [e.target.name]: e.target.value
-    });
-  };
-
-  const { register, handleSubmit, errors } = useForm();
-  const onSubmit = data => {
-    axiosWithAuth()
-      .post("/login", data)
-      .then(res => {
-        localStorage.setItem("token", res.data.payload);
-        props.history.push("/bubblePage");
-      });
-    }
-    return (
-      <div>
-        <h1>Welcome to the Bubble App!</h1>
-
-        <form onSubmit={handleSubmit(onSubmit)}>
-          <input
-            type="text"
-            placeholder="Username"
-            name="username"
-            value={data.username}
-            onChange={handleChange}
-            ref={register({ required: true, maxLength: 80 })}
-          />
-          <br />
-          <input
-            type="text"
-            placeholder="Password"
-            name="password"
-            value={data.password}
-            onChange={handleChange}
-            ref={register({ required: true })}
-          />
-          <br />
-          <button onClick={handleSubmit}>log in</button>
-          
-        </form>
-      </div>
-    );
-  };
-
-export default Login;
+  import React from 'react';
+  import { useState } from 'react';
+  import axios from 'axios';
+  
+  const Login = (props) => {
+      const [newUser, setUser] = useState({
+          username: '',
+          password: ''
+      })
+  
+      const handleChange = (e) => {
+          setUser({ ...newUser, [e.target.name]: e.target.value })
+  
+          console.log(newUser)
+      }
+  
+      const login = (e) => {
+          e.preventDefault()
+          console.log(newUser)
+  
+          axios   
+              .post('http://localhost:5000/api/login', newUser)
+              .then(res => {
+                  localStorage.setItem('token', res.data.payload);
+                  console.log(res.data.payload);
+              // console.log(state.history)
+              props.history.push('/')
+              })
+              .catch(err => {
+                  console.log(err);
+              })
+      }
+      // console.log(state)
+      return (
+          <div>
+              <form onSubmit={e => login(e)}>
+                <div>Username:</div>
+                
+                  <input
+                      type="text"
+                      name="username"
+                     
+                      onChange={e => handleChange(e)}
+                  />
+                  <br></br>
+                  <div>Password:</div>
+                  <input
+                      type='text'
+                      name='password'
+  
+                      onChange={e => handleChange(e)}
+                  />
+                  <br></br>
+                  <button
+                      type='submit'
+                  >Login</button>
+              </form>
+          </div>
+      )
+  }
+  
+  export default Login;
